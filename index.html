@@ -1,0 +1,367 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans)}
+.app{padding:1.5rem 0;max-width:680px}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+.xp-bar-wrap{background:var(--color-background-secondary);border-radius:99px;height:10px;flex:1;margin:0 12px;overflow:hidden}
+.xp-bar{height:100%;background:#7F77DD;border-radius:99px;transition:width 0.4s}
+.level-badge{background:#EEEDFE;color:#3C3489;font-size:13px;font-weight:500;padding:4px 12px;border-radius:99px;white-space:nowrap}
+.tabs{display:flex;gap:8px;margin-bottom:1.25rem}
+.tab{flex:1;padding:8px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);font-size:14px;cursor:pointer;color:var(--color-text-secondary);transition:all 0.15s}
+.tab.active{background:#EEEDFE;border-color:#AFA9EC;color:#3C3489;font-weight:500}
+.section{display:none}
+.section.active{display:block}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:10px}
+.quest-row{display:flex;align-items:center;gap:12px}
+.quest-check{width:22px;height:22px;border-radius:6px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s}
+.quest-check.done{background:#639922;border-color:#639922}
+.quest-info{flex:1}
+.quest-name{font-size:14px;font-weight:500;color:var(--color-text-primary)}
+.quest-name.done{text-decoration:line-through;color:var(--color-text-tertiary)}
+.quest-xp{font-size:12px;color:#534AB7;font-weight:500;margin-top:2px}
+.quest-meta{font-size:12px;color:var(--color-text-secondary);margin-top:2px}
+.add-row{display:flex;gap:8px;margin-bottom:10px}
+.add-row input,select{flex:1;font-size:14px}
+.add-row select{flex:0 0 auto;width:120px}
+.btn{padding:8px 16px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);cursor:pointer;font-size:14px;color:var(--color-text-primary)}
+.btn-primary{background:#7F77DD;border-color:#7F77DD;color:white}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.25rem}
+.stat-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.75rem 1rem}
+.stat-label{font-size:12px;color:var(--color-text-secondary);margin-bottom:4px}
+.stat-val{font-size:22px;font-weight:500;color:var(--color-text-primary)}
+.reward-card{display:flex;align-items:center;gap:12px}
+.reward-icon{width:40px;height:40px;border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.reward-info{flex:1}
+.reward-name{font-size:14px;font-weight:500}
+.reward-cost{font-size:12px;color:#534AB7;margin-top:2px}
+.reward-locked{opacity:.45}
+.claim-btn{font-size:13px;padding:6px 12px}
+.progress-wrap{margin-top:6px}
+.progress-label{display:flex;justify-content:space-between;font-size:12px;color:var(--color-text-secondary);margin-bottom:4px}
+.progress-bar{height:6px;background:var(--color-background-secondary);border-radius:99px;overflow:hidden}
+.progress-fill{height:100%;border-radius:99px;transition:width 0.4s}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:#3C3489;color:white;padding:10px 20px;border-radius:99px;font-size:14px;opacity:0;transition:all 0.3s;pointer-events:none;z-index:99;white-space:nowrap}
+.cat-pill{font-size:11px;padding:2px 8px;border-radius:99px;font-weight:500;display:inline-block;margin-left:6px}
+.cat-fitness{background:#EAF3DE;color:#3B6D11}
+.cat-health{background:#E1F5EE;color:#0F6E56}
+.cat-work{background:#E6F1FB;color:#185FA5}
+.cat-habit{background:#FAEEDA;color:#854F0B}
+.cat-other{background:#F1EFE8;color:#5F5E5A}
+.weight-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.weight-row input{width:100px;font-size:14px}
+.weight-row label{font-size:14px;color:var(--color-text-secondary);flex:1}
+.del-btn{color:var(--color-text-tertiary);background:none;border:none;cursor:pointer;font-size:16px;padding:4px}
+</style>
+
+<div class="app">
+<h2 class="sr-only">Life gamification tracker — complete quests to earn XP and unlock rewards</h2>
+
+<div class="header">
+  <div class="level-badge" id="levelBadge">⚔️ Level 1</div>
+  <div class="xp-bar-wrap"><div class="xp-bar" id="xpBar" style="width:0%"></div></div>
+  <div style="font-size:13px;color:var(--color-text-secondary)" id="xpLabel">0 / 100 XP</div>
+</div>
+
+<div class="stat-grid">
+  <div class="stat-card"><div class="stat-label">Total XP</div><div class="stat-val" id="totalXp">0</div></div>
+  <div class="stat-card"><div class="stat-label">Quests done</div><div class="stat-val" id="questsDone">0</div></div>
+  <div class="stat-card"><div class="stat-label">Streak 🔥</div><div class="stat-val" id="streak">0</div></div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('quests')"><i class="ti ti-list-check" aria-hidden="true"></i> Quests</button>
+  <button class="tab" onclick="switchTab('goals')"><i class="ti ti-target" aria-hidden="true"></i> Goals</button>
+  <button class="tab" onclick="switchTab('rewards')"><i class="ti ti-gift" aria-hidden="true"></i> Rewards</button>
+</div>
+
+<div class="section active" id="tab-quests">
+  <div class="add-row">
+    <input id="questInput" placeholder="Add a quest…" onkeydown="if(event.key==='Enter')addQuest()">
+    <select id="questCat">
+      <option value="fitness">Fitness</option>
+      <option value="health">Health</option>
+      <option value="work">Work</option>
+      <option value="habit">Habit</option>
+      <option value="other">Other</option>
+    </select>
+    <select id="questXp">
+      <option value="10">Easy +10</option>
+      <option value="25" selected>Medium +25</option>
+      <option value="50">Hard +50</option>
+      <option value="100">Epic +100</option>
+    </select>
+    <button class="btn btn-primary" onclick="addQuest()">Add</button>
+  </div>
+  <div id="questList"></div>
+  <p id="questEmpty" style="font-size:14px;color:var(--color-text-tertiary);text-align:center;padding:1.5rem 0">No quests yet — add one above to start your adventure!</p>
+</div>
+
+<div class="section" id="tab-goals">
+  <div class="add-row">
+    <input id="goalName" placeholder="Goal name (e.g. Lose 10 lbs)">
+    <input id="goalTarget" placeholder="Target value" type="number" style="width:110px;flex:0 0 auto">
+    <select id="goalUnit" style="width:90px;flex:0 0 auto">
+      <option>lbs</option><option>kg</option><option>miles</option><option>hrs</option><option>reps</option><option>days</option>
+    </select>
+    <select id="goalXpReward" style="width:120px;flex:0 0 auto">
+      <option value="50">+50 XP</option>
+      <option value="100">+100 XP</option>
+      <option value="200" selected>+200 XP</option>
+      <option value="500">+500 XP</option>
+    </select>
+    <button class="btn btn-primary" onclick="addGoal()">Add</button>
+  </div>
+  <div id="goalList"></div>
+  <p id="goalEmpty" style="font-size:14px;color:var(--color-text-tertiary);text-align:center;padding:1.5rem 0">Set a big goal and log your progress here!</p>
+</div>
+
+<div class="section" id="tab-rewards">
+  <div class="add-row">
+    <input id="rewardName" placeholder="Reward (e.g. Cheat meal, Movie night)">
+    <input id="rewardCost" type="number" placeholder="XP cost" style="width:110px;flex:0 0 auto" value="100">
+    <button class="btn btn-primary" onclick="addReward()">Add</button>
+  </div>
+  <div id="rewardList"></div>
+  <p id="rewardEmpty" style="font-size:14px;color:var(--color-text-tertiary);text-align:center;padding:1.5rem 0">Add rewards you can unlock with your hard-earned XP!</p>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let state = {
+  xp: 0,
+  questsDone: 0,
+  streak: 0,
+  quests: [],
+  goals: [],
+  rewards: [],
+  lastDate: null
+};
+
+try { const s = localStorage.getItem('lgState'); if(s) state = JSON.parse(s); } catch(e) {}
+
+function save() {
+  try { localStorage.setItem('lgState', JSON.stringify(state)); } catch(e) {}
+}
+
+const XP_PER_LEVEL = 100;
+
+function getLevel(xp) { return Math.floor(xp / XP_PER_LEVEL) + 1; }
+function getXpInLevel(xp) { return xp % XP_PER_LEVEL; }
+
+function updateHeader() {
+  const level = getLevel(state.xp);
+  const inLevel = getXpInLevel(state.xp);
+  const pct = Math.round((inLevel / XP_PER_LEVEL) * 100);
+  document.getElementById('levelBadge').textContent = '⚔️ Level ' + level;
+  document.getElementById('xpBar').style.width = pct + '%';
+  document.getElementById('xpLabel').textContent = inLevel + ' / ' + XP_PER_LEVEL + ' XP';
+  document.getElementById('totalXp').textContent = state.xp;
+  document.getElementById('questsDone').textContent = state.questsDone;
+  document.getElementById('streak').textContent = state.streak;
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.opacity = '1';
+  t.style.transform = 'translateX(-50%) translateY(0)';
+  setTimeout(() => { t.style.opacity='0'; t.style.transform='translateX(-50%) translateY(20px)'; }, 2200);
+}
+
+function gainXp(amount) {
+  const prev = getLevel(state.xp);
+  state.xp += amount;
+  const next = getLevel(state.xp);
+  if(next > prev) toast('🎉 Level up! You reached Level ' + next);
+  updateHeader();
+  save();
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['quests','goals','rewards'][i]===name));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+}
+
+const catColors = {fitness:'cat-fitness',health:'cat-health',work:'cat-work',habit:'cat-habit',other:'cat-other'};
+const catLabels = {fitness:'Fitness',health:'Health',work:'Work',habit:'Habit',other:'Other'};
+
+function renderQuests() {
+  const list = document.getElementById('questList');
+  const empty = document.getElementById('questEmpty');
+  if(state.quests.length === 0) { list.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+  list.innerHTML = state.quests.map((q,i) => `
+    <div class="card">
+      <div class="quest-row">
+        <div class="quest-check ${q.done?'done':''}" onclick="toggleQuest(${i})" title="${q.done?'Mark incomplete':'Complete quest'}">
+          ${q.done?'<i class="ti ti-check" style="color:white;font-size:14px" aria-hidden="true"></i>':''}
+        </div>
+        <div class="quest-info">
+          <div class="quest-name ${q.done?'done':''}">${q.name}<span class="cat-pill ${catColors[q.cat]||'cat-other'}">${catLabels[q.cat]||q.cat}</span></div>
+          <div class="quest-xp">+${q.xp} XP</div>
+        </div>
+        <button class="del-btn" onclick="deleteQuest(${i})" title="Delete quest" aria-label="Delete quest"><i class="ti ti-trash" aria-hidden="true"></i></button>
+      </div>
+    </div>`).join('');
+}
+
+function addQuest() {
+  const name = document.getElementById('questInput').value.trim();
+  if(!name) return;
+  state.quests.push({ name, cat: document.getElementById('questCat').value, xp: parseInt(document.getElementById('questXp').value), done: false });
+  document.getElementById('questInput').value='';
+  save(); renderQuests();
+}
+
+function toggleQuest(i) {
+  const q = state.quests[i];
+  if(!q.done) {
+    q.done = true;
+    state.questsDone++;
+    gainXp(q.xp);
+    toast('✅ Quest complete! +' + q.xp + ' XP');
+    checkStreak();
+  } else {
+    q.done = false;
+    state.questsDone = Math.max(0, state.questsDone-1);
+    state.xp = Math.max(0, state.xp - q.xp);
+    updateHeader();
+  }
+  save(); renderQuests();
+}
+
+function deleteQuest(i) {
+  state.quests.splice(i,1);
+  save(); renderQuests();
+}
+
+function checkStreak() {
+  const today = new Date().toDateString();
+  if(state.lastDate !== today) { state.streak++; state.lastDate = today; }
+}
+
+function renderGoals() {
+  const list = document.getElementById('goalList');
+  const empty = document.getElementById('goalEmpty');
+  if(state.goals.length === 0) { list.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+  list.innerHTML = state.goals.map((g,i) => {
+    const pct = Math.min(100, Math.round((g.current/g.target)*100));
+    const done = g.current >= g.target;
+    return `<div class="card">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <div style="flex:1">
+          <span style="font-size:14px;font-weight:500;color:var(--color-text-primary)">${g.name}</span>
+          ${done?'<span class="cat-pill" style="background:#EAF3DE;color:#3B6D11">Complete!</span>':''}
+        </div>
+        <span style="font-size:12px;color:#534AB7;font-weight:500">+${g.xpReward} XP on complete</span>
+        <button class="del-btn" onclick="deleteGoal(${i})" aria-label="Delete goal"><i class="ti ti-trash" aria-hidden="true"></i></button>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label"><span>${g.current} / ${g.target} ${g.unit}</span><span>${pct}%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${done?'#639922':'#7F77DD'}"></div></div>
+      </div>
+      ${!done?`<div class="weight-row" style="margin-top:10px">
+        <input id="glog${i}" type="number" placeholder="Log progress" step="any">
+        <label>new total (${g.unit})</label>
+        <button class="btn" style="font-size:13px;padding:6px 12px" onclick="logGoal(${i})">Log</button>
+      </div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function addGoal() {
+  const name = document.getElementById('goalName').value.trim();
+  const target = parseFloat(document.getElementById('goalTarget').value);
+  if(!name || !target) return;
+  state.goals.push({ name, target, current: 0, unit: document.getElementById('goalUnit').value, xpReward: parseInt(document.getElementById('goalXpReward').value), rewarded: false });
+  document.getElementById('goalName').value='';
+  document.getElementById('goalTarget').value='';
+  save(); renderGoals();
+}
+
+function logGoal(i) {
+  const val = parseFloat(document.getElementById('glog'+i).value);
+  if(isNaN(val)) return;
+  const g = state.goals[i];
+  g.current = val;
+  if(g.current >= g.target && !g.rewarded) {
+    g.rewarded = true;
+    gainXp(g.xpReward);
+    toast('🏆 Goal reached! +' + g.xpReward + ' XP!');
+  }
+  save(); renderGoals();
+}
+
+function deleteGoal(i) { state.goals.splice(i,1); save(); renderGoals(); }
+
+const rewardEmojis = ['🎁','🍕','🎬','🎮','🛁','🎉','⭐','🏖️','🍰','🎶'];
+function renderRewards() {
+  const list = document.getElementById('rewardList');
+  const empty = document.getElementById('rewardEmpty');
+  if(state.rewards.length === 0) { list.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+  list.innerHTML = state.rewards.map((r,i) => {
+    const canAfford = state.xp >= r.cost;
+    return `<div class="card ${!canAfford?'reward-locked':''}">
+      <div class="reward-card">
+        <div class="reward-icon" style="background:${canAfford?'#EEEDFE':'var(--color-background-secondary)'}">
+          ${rewardEmojis[i % rewardEmojis.length]}
+        </div>
+        <div class="reward-info">
+          <div class="reward-name">${r.name}</div>
+          <div class="reward-cost">${r.cost} XP to claim${!canAfford?' · Need '+(r.cost-state.xp)+' more XP':''}</div>
+        </div>
+        <button class="btn claim-btn ${canAfford?'btn-primary':''}" onclick="claimReward(${i})" ${!canAfford?'disabled':''}>
+          ${canAfford?'Claim':'Locked'}
+        </button>
+        <button class="del-btn" onclick="deleteReward(${i})" aria-label="Delete reward"><i class="ti ti-trash" aria-hidden="true"></i></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function addReward() {
+  const name = document.getElementById('rewardName').value.trim();
+  const cost = parseInt(document.getElementById('rewardCost').value);
+  if(!name || !cost) return;
+  state.rewards.push({ name, cost });
+  document.getElementById('rewardName').value='';
+  save(); renderRewards();
+}
+
+function claimReward(i) {
+  const r = state.rewards[i];
+  if(state.xp < r.cost) return;
+  state.xp -= r.cost;
+  updateHeader();
+  toast('🎁 Reward claimed: ' + r.name + '!');
+  save(); renderRewards();
+}
+
+function deleteReward(i) { state.rewards.splice(i,1); save(); renderRewards(); }
+
+if(state.quests.length===0 && state.goals.length===0 && state.rewards.length===0) {
+  state.quests = [
+    {name:'Morning workout (30 min)',cat:'fitness',xp:25,done:false},
+    {name:'Drink 8 glasses of water',cat:'health',xp:10,done:false},
+    {name:'Read for 20 minutes',cat:'habit',xp:10,done:false},
+    {name:'Complete top priority task at work',cat:'work',xp:50,done:false},
+  ];
+  state.goals = [
+    {name:'Lose 10 lbs',target:10,current:0,unit:'lbs',xpReward:500,rewarded:false},
+  ];
+  state.rewards = [
+    {name:'Cheat meal of your choice',cost:100},
+    {name:'Movie night',cost:150},
+    {name:'New workout gear',cost:500},
+  ];
+  save();
+}
+
+updateHeader(); renderQuests(); renderGoals(); renderRewards();
+</script>
