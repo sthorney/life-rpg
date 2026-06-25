@@ -1,4 +1,8 @@
-
+<head>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#7F77DD">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:var(--font-sans);}
@@ -229,6 +233,13 @@ body{font-family:var(--font-sans);}
 <div class="toast" id="toast"></div>
 
 <script>
+ if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(() => console.log('Service Worker registered'))
+      .catch(err => console.error('Service Worker registration failed:', err));
+  });
+} 
 const LEVELS=[0,100,250,500,900,1500,2500,4000,6000,9000];
 const TITLES=["Novice Adventurer","Apprentice Hero","Rising Champion","Seasoned Warrior","Elite Quester","Legendary Achiever","Master of Goals","Grand Champion","Mythic Hero","Ascended Legend"];
 const CAT_LABELS={diet:"Diet",house:"House",career:"Career",wellness:"Wellness"};
