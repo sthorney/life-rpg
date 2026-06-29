@@ -1,0 +1,49 @@
+:root {
+
+  /* === BACKGROUND SYSTEM === */
+  --bg: #0F1115;
+  --surface: #151922;
+  --card: #1B1F27;
+  --card-hover: #222838;
+
+  /* === ACCENTS === */
+  --primary: #4F8CFF;
+  --primary-glow: rgba(79, 140, 255, 0.25);
+
+  --success: #38D996;
+  --warning: #FFB547;
+  --danger: #FF5B5B;
+
+  --xp: #FFD34D;
+  --legendary: #9C6CFF;
+
+  /* === TEXT === */
+  --text: #F4F6FA;
+  --text-secondary: #A4ABB8;
+  --text-muted: #6B7280;
+
+  /* === SPACING (8pt grid) === */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+  --space-6: 48px;
+  --space-7: 64px;
+
+  /* === BORDER RADIUS === */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+
+  /* === SHADOWS === */
+  --shadow-sm: 0 4px 12px rgba(0,0,0,0.25);
+  --shadow-md: 0 8px 24px rgba(0,0,0,0.30);
+  --shadow-glow: 0 0 20px rgba(79,140,255,0.25);
+
+  /* === TRANSITIONS === */
+  --fast: 150ms ease;
+  --medium: 250ms ease;
+  --slow: 400ms ease;
+}
