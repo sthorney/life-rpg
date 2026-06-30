@@ -16,8 +16,25 @@
 
 <div class="app">
   <div class="hdr-row">
-    <div class="hdr-title" id="lvl-title">⚔️ Level 1 — Novice Adventurer</div>
-    <button onclick="sendPrompt('Give me more quest and reward ideas for my life gamification tracker')" style="font-size:11px;padding:4px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);cursor:pointer;">More ideas ↗</button>
+    <<header class="hud">
+  <div class="hud-left">
+    <div id="lvl-title">⚔️ Level 1 — Novice Adventurer</div>
+  </div>
+
+  <div class="hud-center">
+    <div class="xp-row">
+      <span id="xp-txt">0 / 100 XP</span>
+    </div>
+    <div class="xp-track">
+      <div class="xp-fill" id="xp-bar"></div>
+    </div>
+  </div>
+
+  <div class="hud-right">
+    ⚡ <span id="energy">64</span> ❤️ <span id="hp">82</span> 🪙 <span id="coins">240</span>
+  </div>
+</header>
+
   </div>
 
   <div class="nav">
